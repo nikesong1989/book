@@ -14,6 +14,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+
+
+
 Route::get('/login', 'View\MemberController@toLogin');
 Route::get('/register', 'View\MemberController@toRegister');
 
@@ -28,7 +31,7 @@ Route::group(['prefix' => 'service'], function () {
   Route::post('validate_phone/send', 'Service\ValidateController@sendSMS');
   Route::post('upload/{type}', 'Service\UploadController@uploadFile');
 
-  Route::post('register', 'Service\MemberController@register');
+  Route::any('register', 'Service\MemberController@register');
   Route::post('login', 'Service\MemberController@login');
 
   Route::get('category/parent_id/{parent_id}', 'Service\BookController@getCategoryByParentId');

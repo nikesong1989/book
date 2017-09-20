@@ -70,11 +70,14 @@ class MemberController extends Controller
 
         $m3_result->status = 0;
         $m3_result->message = '注册成功';
-        return $m3_result->toJson();
+//        return $m3_result->toJson();
+          return redirect('/login');
       } else {
         $m3_result->status = 7;
         $m3_result->message = '手机验证码不正确';
-        return $m3_result->toJson();
+//        return $m3_result->toJson();
+
+          return $m3_result->message;
       }
 
     // 邮箱注册
@@ -96,6 +99,9 @@ class MemberController extends Controller
       $member->email = $email;
       $member->password = md5('bk' . $password);
       $member->save();
+
+        return redirect('/login');
+
 
       $uuid = UUID::create();
 
@@ -122,7 +128,8 @@ class MemberController extends Controller
 
       $m3_result->status = 0;
       $m3_result->message = '注册成功';
-      return $m3_result->toJson();
+//      return $m3_result->toJson();
+        return view('/login');
     }
   }
 
@@ -156,9 +163,9 @@ class MemberController extends Controller
       $m3_result->message = '该用户不存在';
       return $m3_result->toJson();
     } else {
-      if(md5('bk' + $password) != $member->password) {
+      if(md5('bk'.$password) != $member->password) {
         $m3_result->status = 3;
-        $m3_result->message = '密码不正确';
+        $m3_result->message = '密码不正确'.md5('bk' . $password);
         return $m3_result->toJson();
       }
     }

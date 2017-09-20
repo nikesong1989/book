@@ -7,13 +7,13 @@ use App\Models\M3Result;
 class SendTemplateSMS
 {
   //主帐号
-  private $accountSid='aaf98f8949d575140149dd482efa04b5';
+  private $accountSid='8aaf07085e2d97fd015e3b06a949049b';
 
   //主帐号Token
-  private $accountToken='c7a1c3563b1347f4adbe0734f981dac1';
+  private $accountToken='817fb9714d254eb394ee69ef49254a4d';
 
   //应用Id
-  private $appId='8a48b55149d5792d0149dd63a3c4046d';
+  private $appId='8aaf07085e2d97fd015e3b06acc804a2';
 
   //请求地址，格式如下，不需要写https://
   private $serverIP='sandboxapp.cloopen.com';
@@ -36,12 +36,14 @@ class SendTemplateSMS
 
        // 初始化REST SDK
        $rest = new CCPRestSDK($this->serverIP,$this->serverPort,$this->softVersion);
-       $rest->setAccount($this->accountSid,$this->accountToken);
-       $rest->setAppId($this->appId);
+       $rest->setAccount($this->accountSid,$this->accountToken);   //设置账号和TOken
+       $rest->setAppId($this->appId);                               //设置应用 ID
 
        // 发送模板短信
-      //  echo "Sending TemplateSMS to $to <br/>";
-       $result = $rest->sendTemplateSMS($to,$datas,$tempId);
+       $result = $rest->sendTemplateSMS($to,$datas,$tempId);        //发送
+
+
+//      返回发送结果及状态
        if($result == NULL ) {
            $m3_result->status = 3;
            $m3_result->message = 'result error!';
@@ -53,9 +55,8 @@ class SendTemplateSMS
            $m3_result->status = 0;
            $m3_result->message = '发送成功';
        }
-
        return $m3_result;
   }
 }
 
-//sendTemplateSMS("18576437523", array(1234, 5), 1);
+

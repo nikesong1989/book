@@ -9,7 +9,8 @@
   <link rel="stylesheet" href="/css/swipe.css"> --}}
   {{--<link rel="stylesheet" href="http://bucket.yinnote.com/book/book.min.css">--}}
   <link rel="stylesheet" href="{{asset('build/book.min.css')}}">
-
+    <script src="http://app.cloopen.com/im50/ytx-web-im-min-new.js"></script>
+    <script src="{{ asset('js/jquery-1.11.2.min.js') }}"></script>
 </head>
 <body>
 <div class="bk_title_bar">

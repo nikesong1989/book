@@ -3,6 +3,8 @@
 @section('title', '注册')
 
 @section('content')
+  <form action="/service/register" method="post">
+    {{ csrf_field() }}
 <div class="weui_cells_title">注册方式</div>
 <div class="weui_cells weui_cells_radio">
   <label class="weui_cell weui_check_label" for="x11">
@@ -24,25 +26,16 @@
       </div>
   </label>
 </div>
+{{--手机注册--}}
 <div class="weui_cells weui_cells_form">
   <div class="weui_cell">
       <div class="weui_cell_hd"><label class="weui_label">手机号</label></div>
       <div class="weui_cell_bd weui_cell_primary">
           <input class="weui_input" type="number" placeholder="" name="phone"/>
+          <input hidden type="text"   name="rf" value="{{ csrf_token() }}"/>
       </div>
   </div>
-  <div class="weui_cell">
-      <div class="weui_cell_hd"><label class="weui_label">密码</label></div>
-      <div class="weui_cell_bd weui_cell_primary">
-          <input class="weui_input" type="password" placeholder="不少于6位" name='passwd_phone'/>
-      </div>
-  </div>
-  <div class="weui_cell">
-      <div class="weui_cell_hd"><label class="weui_label">确认密码</label></div>
-      <div class="weui_cell_bd weui_cell_primary">
-          <input class="weui_input" type="password" placeholder="不少于6位" name='passwd_phone_cfm'/>
-      </div>
-  </div>
+
   <div class="weui_cell">
       <div class="weui_cell_hd"><label class="weui_label">手机验证码</label></div>
       <div class="weui_cell_bd weui_cell_primary">
@@ -53,25 +46,28 @@
       </div>
   </div>
 </div>
+    <div class="weui_cell">
+      <div class="weui_cell_hd"><label class="weui_label">密码</label></div>
+      <div class="weui_cell_bd weui_cell_primary">
+        <input class="weui_input" type="password" placeholder="不少于6位" name='password'/>
+      </div>
+    </div>
+    <div class="weui_cell">
+      <div class="weui_cell_hd"><label class="weui_label">确认密码</label></div>
+      <div class="weui_cell_bd weui_cell_primary">
+        <input class="weui_input" type="password" placeholder="不少于6位" name='confirm'/>
+      </div>
+    </div>
 <div class="weui_cells weui_cells_form" style="display: none;">
+
+{{--邮箱注册--}}
   <div class="weui_cell">
       <div class="weui_cell_hd"><label class="weui_label">邮箱</label></div>
       <div class="weui_cell_bd weui_cell_primary">
           <input class="weui_input" type="text" placeholder="" name='email'/>
       </div>
   </div>
-  <div class="weui_cell">
-      <div class="weui_cell_hd"><label class="weui_label">密码</label></div>
-      <div class="weui_cell_bd weui_cell_primary">
-          <input class="weui_input" type="password" placeholder="不少于6位" name='passwd_email'>
-      </div>
-  </div>
-  <div class="weui_cell">
-      <div class="weui_cell_hd"><label class="weui_label">确认密码</label></div>
-      <div class="weui_cell_bd weui_cell_primary">
-          <input class="weui_input" type="password" placeholder="不少于6位" name='passwd_email_cfm'/>
-      </div>
-  </div>
+
   <div class="weui_cell weui_vcode">
       <div class="weui_cell_hd"><label class="weui_label">验证码</label></div>
       <div class="weui_cell_bd weui_cell_primary">
@@ -82,11 +78,15 @@
       </div>
   </div>
 </div>
+
+
 <div class="weui_cells_tips"></div>
 <div class="weui_btn_area">
-  <a class="weui_btn weui_btn_primary" href="javascript:" onclick="onRegisterClick();">注册</a>
+  {{--<a class="weui_btn weui_btn_primary" href="/service/register" >注册</a>--}}
+  <input type="submit" class="weui_btn weui_btn_primary" value="注册">
 </div>
 <a href="/login" class="bk_bottom_tips bk_important">已有帐号? 去登录</a>
+  </form>
 @endsection
 
 @section('my-js')
@@ -114,78 +114,48 @@
   });
 
 </script>
-<script type="text/javascript">
-  var enable = true;
-  $('.bk_phone_code_send').click(function(event) {
-    if(enable == false) {
-      return;
-    }
 
+<script>
+
+
+
+
+  $('.bk_phone_code_send').click(function () {
     var phone = $('input[name=phone]').val();
-    // 手机号不为空
-    if(phone == '') {
-      $('.bk_toptips').show();
-      $('.bk_toptips span').html('请输入手机号');
-      setTimeout(function() {$('.bk_toptips').hide();}, 2000);
-      return;
-    }
-    // 手机号格式
-    if(phone.length != 11 || phone[0] != '1') {
-      $('.bk_toptips').show();
-      $('.bk_toptips span').html('手机格式不正确');
-      setTimeout(function() {$('.bk_toptips').hide();}, 2000);
-      return;
-    }
+    var csrfv = $('input[name=rf]').val();
 
-    $(this).removeClass('bk_important');
-    $(this).addClass('bk_summary');
-    enable = false;
-    var num = 60;
-    var interval = window.setInterval(function() {
-      $('.bk_phone_code_send').html(--num + 's 重新发送');
-      if(num == 0) {
-        $('.bk_phone_code_send').removeClass('bk_summary');
-        $('.bk_phone_code_send').addClass('bk_important');
-        enable = true;
-        window.clearInterval(interval);
-        $('.bk_phone_code_send').html('重新发送');
-      }
-    }, 1000);
+    $.post('/service/validate_phone/send',
+            {
+              phone:phone,
+              _token:csrfv,
+            },
+            function(data,status)
+            {
 
-    $.ajax({
-      url: '/service/validate_phone/send',
-      type: 'POST',
-      dataType: 'json',
-      cache: false,
-      data: {phone: phone, _token: "{{csrf_token()}}"},
-      success: function(data) {
-        if(data == null) {
-          $('.bk_toptips').show();
-          $('.bk_toptips span').html('服务端错误');
-          setTimeout(function() {$('.bk_toptips').hide();}, 2000);
-          return;
-        }
-        if(data.status != 0) {
-          $('.bk_toptips').show();
-          $('.bk_toptips span').html(data.message);
-          setTimeout(function() {$('.bk_toptips').hide();}, 2000);
-          return;
-        }
+              if(data == null) {
+                $('.bk_toptips').show();
+                $('.bk_toptips span').html('服务器错误!');
+                setTimeout(function() {$('.bk_toptips').hide();}, 2000);
+                return;
+              }
+              if(data != null) {
+                $('.bk_toptips').show();
+                $('.bk_toptips span').html(data);
+                setTimeout(function() {$('.bk_toptips').hide();}, 2000);
+              }
+            }
 
-        $('.bk_toptips').show();
-        $('.bk_toptips span').html('发送成功');
-        setTimeout(function() {$('.bk_toptips').hide();}, 2000);
-      },
-      error: function(xhr, status, error) {
-        console.log(xhr);
-        console.log(status);
-        console.log(error);
-      }
-    });
+    );
   });
-</script>
-<script type="text/javascript">
 
+</script>
+
+
+
+
+
+<script type="text/javascript">
+//  邮箱注册JS
   function onRegisterClick() {
 
     $('input:radio[name=register_type]').each(function(index, el) {
@@ -221,8 +191,14 @@
           url: '/service/register',
           dataType: 'json',
           cache: false,
-          data: {phone: phone, email: email, password: password, confirm: confirm,
-            phone_code: phone_code, validate_code: validate_code, _token: "{{csrf_token()}}"},
+          data: {
+            phone: phone,
+            email: email,
+            password: password,
+            confirm: confirm,
+            phone_code: phone_code,
+            validate_code: validate_code,
+            _token: "{{csrf_token()}}"},
           success: function(data) {
             if(data == null) {
               $('.bk_toptips').show();
